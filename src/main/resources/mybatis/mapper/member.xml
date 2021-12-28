@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.member.dao.IMemberDao">
+
+<sql id="search">
+	<if test="!@org.apache.commons.lang3.StringUtils@isBlank(searchWord)">
+		<choose>
+			<when test='searchType == "NM"'> AND MEM_NAME LIKE '%' || #{searchWord} || '%' </when>
+			<when test='searchType == "ID"'> AND MEM_ID LIKE '%' || #{searchWord} || '%' </when>
+			<when test='searchType == "HP"'> AND MEM_HP LIKE '%' || #{searchWord} || '%' </when>
+		</choose>
+	</if>
+	<if test="!@org.apache.commons.lang3.StringUtils@isBlank(searchJob)">
+		AND MEM_JOB = #{searchJob}
+	</if>
+	<if test="!@org.apache.commons.lang3.StringUtils@isBlank(searchHobby)">
+		AND MEM_HOBBY = #{searchHobby}
+	</if>
+</sql>
+
+<select id="getMemberList" resultType="com.study.member.vo.MemberVO" parameterType="com.study.member.vo.MemberSearchVO">
+	<include refid="common.prePage"/>							             
+			SELECT                                                                        
+			       to_char(mem_bir,'YYYY-MM-DD') AS mem_bir              ,                
+			       mem_id     ,     mem_pass     ,       mem_name        ,                
+			                        mem_zip      ,       mem_add1        ,                
+			       mem_add2   ,     mem_hp       ,       mem_mail        ,                
+			       mem_job    ,     mem_hobby    ,       mem_mileage     ,                
+			       mem_del_yn ,		B.COMM_NM AS MEM_JOB_NM, C.COMM_NM AS MEM_HOBBY_NM  
+			 FROM MEMBER A, COMM_CODE B, COMM_CODE C 										
+			 WHERE A.MEM_JOB = B.COMM_CD AND A.MEM_HOBBY = C.COMM_CD
+			 <include refid="search"/>
+			ORDER BY MEM_ID DESC
+	<include refid="common.postPage"/>
+</select>
+
+<select id="getMember" resultType="com.study.member.vo.MemberVO" parameterType="String">
+	SELECT                                                                     
+	       to_char(mem_bir,'YYYY-MM-DD') AS mem_bir              ,            
+	       mem_id     ,     mem_pass     ,       mem_name        ,             
+	                        mem_zip      ,       mem_add1        ,             
+	       mem_add2   ,     mem_hp       ,       mem_mail        ,             
+	       mem_job    ,     mem_hobby    ,       mem_mileage     ,             
+	       mem_del_yn ,		B.COMM_NM AS MEM_JOB_NM, C.COMM_NM AS MEM_HOBBY_NM  
+	FROM MEMBER A, COMM_CODE B, COMM_CODE C 										
+	WHERE A.MEM_JOB = B.COMM_CD AND A.MEM_HOBBY = C.COMM_CD                   
+	AND mem_id = #{memId}                                                             
+</select>
+
+<update id="updateMember" parameterType="com.study.member.vo.MemberVO">
+	UPDATE member SET    
+		mem_name=#{memName}           
+		,mem_bir=#{memBir}           
+		,mem_zip=#{memZip}           
+		,mem_add1=#{memAdd1}          
+		,mem_add2=#{memAdd2}          
+		,mem_hp=#{memHp}            
+		,mem_mail=#{memMail}          
+		,mem_job=#{memJob}           
+		,mem_hobby=#{memHobby}         
+	WHERE mem_id=#{memId}       
+</update>
+
+<update id="deleteMember" parameterType="com.study.member.vo.MemberVO">
+	UPDATE MEMBER SET
+	MEM_DEL_YN = 'Y'
+	WHERE MEM_ID = #{memId}
+</update>
+
+<insert id="insertMember" parameterType="com.study.member.vo.MemberVO">
+	INSERT INTO member VALUES( 
+		 #{memId},     #{memPass},    #{memName},           
+		 #{memBir},     #{memZip},    #{memAdd1},           
+		 #{memAdd2},     #{memHp},    #{memMail},           
+		 #{memJob},     #{memHobby},    0,           
+		 'N'                       
+	  )                        
+</insert>
+
+<select id="getTotalRowCount" resultType="int" parameterType="com.study.member.vo.MemberSearchVO">
+	SELECT COUNT(*) FROM MEMBER	WHERE 1=1
+	<include refid="search"/>
+</select>
+
+</mapper>

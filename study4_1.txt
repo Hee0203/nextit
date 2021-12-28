@@ -1,0 +1,13 @@
+서버 켜질 때 bean이 잘 만들어져야 한다
+@Controller bean은 DispatcherSErvlet(mvc-servlet.xml)에서
+그 외 bean은 ContextLoaderListener(context-main.xml)에
+
+만들어진 @Controller 안에 있는 @RequestMapping에 있는 url요청만 처리가능
+--------------------------------------------------------------------------------
+Error Creating Bean with Name
+- This is Error When you not well created bean
+-> 클래스에 @를 잘 붙였는지, @Inject를 잘 했는지
+--------------------------------------------------------------------------------
+서버가 잘 켜짐 -> 빈이 잘 만들어짐
+@Requesetmapping에 없는 url 요청 == 404, 가용하지 않습니다 => contextPath or @RequestMapping Url in Server
+메소드에서 return 시 jsp를 못찾을 때 => 404, /WEB-INF/views에 jsp가 없습니다. == Check the return value in Method or Check the jsp file location

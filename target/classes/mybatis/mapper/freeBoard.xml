@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.free.dao.IFreeBoardDao">
+<!-- SqlSession에서 IFreeBoardDao의 구현체를 만드는데 참고되는 파일 
+		FreeBoardDaoOracle을 대신하는 파일
+		namespace에는 IFreeBoardDao의 풀네임을 작성합니다.
+-->
+<!-- DON'T USE THE SEMICOLON  -->
+
+<!-- ID는 메소드
+		parameterType =  메소드의 파라미터, VO의 경우 안에서 $ 또는 # 형태로 쓴다
+	 	FreeBoardVO면 쿼리문에서 where bo_no =#{boNo}
+		resultType = 메소드의 return Type, List의 경우 그 안에 담긴 데이터 타입을 기입
+						select 결과를 알아서 list, set 등으로 알아서 타입 맞춘 후 return  
+
+ -->
+ <!-- mybatis에서 자바 static 메소드 사용하기
+ 		@ClassName@MethodName(FieldName of Parameter)
+  -->
+<sql id="search">
+	<if test="!@org.apache.commons.lang3.StringUtils@isBlank(searchWord)">
+		<choose>
+			<when test='searchType == "T"'> AND BO_TITLE LIKE '%' || #{searchWord} || '%' </when>
+			<when test='searchType == "W"'> AND BO_WRITER LIKE '%' || #{searchWord} || '%' </when>
+			<when test='searchType == "C"'> AND BO_CONTENT LIKE '%' || #{searchWord} || '%' </when>
+		</choose>
+	</if>
+	<if test="!@org.apache.commons.lang3.StringUtils@isBlank(searchCategory)">
+		AND BO_CATEGORY = #{searchCategory}
+	</if>
+</sql>
+  
+<select id="getTotalRowCount" 
+resultType="int"
+parameterType="com.study.free.vo.FreeBoardSearchVO">
+	SELECT COUNT(*) FROM FREE_BOARD WHERE 1=1
+	<include refid="search"/>
+</select>
+
+<select id="getBoardList"
+resultType="com.study.free.vo.FreeBoardVO"
+parameterType="com.study.free.vo.FreeBoardSearchVO">
+	<include refid="common.prePage"/>
+	SELECT                                                        
+	       to_char(bo_reg_date,'YYYY-MM-DD') AS bo_reg_date      ,
+	       to_char(bo_mod_date,'YYYY-MM-DD') AS bo_mod_date      ,
+	       bo_no      ,     bo_title     ,       bo_category     ,
+	       bo_writer  ,     bo_pass      ,       bo_content      ,
+	       bo_ip      ,     bo_hit       ,       bo_del_yn       ,
+			B.COMM_NM AS BO_CATEGORY_NM								
+	FROM free_board a, comm_code b                                
+	WHERE A.BO_CATEGORY = B.COMM_CD		
+	<include refid="search"/>
+	ORDER BY BO_NO DESC		
+	<include refid="common.postPage"/>	
+</select>
+
+<!-- 지금은 파라미터가 VO가 아니고 int, (이럴 경우 아무렇게나 써도 됨) -->
+<select id="getBoard"
+resultType="com.study.free.vo.FreeBoardVO"
+parameterType="int">
+	SELECT                                                                  
+       to_char(bo_reg_date,'YYYY-MM-DD') AS bo_reg_date      ,          
+       to_char(bo_mod_date,'YYYY-MM-DD') AS bo_mod_date      ,           
+       bo_no      ,     bo_title     ,       bo_category     ,           
+       bo_writer  ,     bo_pass      ,       bo_content      ,           
+       bo_ip      ,     bo_hit       ,       bo_del_yn       ,           
+		B.COMM_NM AS BO_CATEGORY_NM									        
+	FROM free_board a, comm_code b                                           
+	WHERE A.BO_CATEGORY = B.COMM_CD								            
+	AND BO_NO = #{boNo}                
+</select>
+
+<update id="increaseHit" parameterType="int">
+	UPDATE FREE_BOARD SET BO_HIT = BO_HIT + 1   
+	WHERE BO_NO = #{boNo}
+</update>
+
+<update id="updateBoard" parameterType="com.study.free.vo.FreeBoardVO">
+	UPDATE free_board SET
+	bo_title= #{boTitle}           
+	,bo_category=#{boCategory}       
+	,bo_content=#{boContent}        
+	,bo_mod_date=sysdate 
+	WHERE bo_no= #{boNo}    
+</update>
+
+<update id="deleteBoard" parameterType="com.study.free.vo.FreeBoardVO">
+	UPDATE FREE_BOARD SET
+	BO_DEL_YN = 'Y'
+	WHERE BO_NO = #{boNo}
+</update>
+
+<insert id="insertBoard" parameterType="com.study.free.vo.FreeBoardVO">
+	INSERT INTO FREE_BOARD VALUES (
+		SEQ_FREE_BOARD.NEXTVAL, #{boTitle}, #{boCategory},
+		#{boWriter}, #{boPass}, #{boContent},
+		#{boIp}, 0, SYSDATE,
+		NULL, 'N'
+	)
+</insert> 
+<!-- update insert delete 는 update로 써도 됨 ( 웬만하면 맞춰서 쓰기 ) -->
+
+<select id="getBoardMap" resultType="com.study.free.vo.FreeBoardVO" parameterType="Map">
+	<![CDATA[
+		SELECT * FROM FREE_BOARD
+		WHERE BO_NO < #{boNo}
+		AND BO_TITLE = #{boTitle}
+	]]> 
+</select>
+
+<select id="getBoardAnotation" resultType="com.study.free.vo.FreeBoardVO" parameterType="Map">
+	<![CDATA[
+		SELECT * FROM FREE_BOARD
+		WHERE BO_NO < #{boNo}
+		AND BO_TITLE = #{boTitle}
+	]]>
+</select>
+
+
+</mapper>

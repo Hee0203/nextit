@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+
+	<!-- DB 관련 bean regist of ContextLoaderListener bean  -->
+		<bean id= "dataSource" class= "org.apache.commons.dbcp2.BasicDataSource" destroy-method= "close">
+			<property name= "driverClassName" value="#{util['jdbc.driverClassName']}" />
+			<property name= "url" value="#{util['jdbc.url']}" />
+			<property name= "username" value="#{util['jdbc.username']}" />
+			<property name= "password" value="#{util['jdbc.password']}" />
+			<property name= "defaultAutoCommit" value="#{util['jdbc.defaultAutoCommit']}" />
+		</bean> 
+		
+		<mybatis-spring:scan base-package="com.study" annotation="org.apache.ibatis.annotations.Mapper" /> 
+		
+		<!-- SqlSession setup for MyBatis Database Layer -->
+		<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+			<property name="dataSource" ref="dataSource" />
+			<property name="configLocation" value="/WEB-INF/classes/mybatis/mybatis-config.xml" />
+			<property name="mapperLocations" value="/WEB-INF/classes/mybatis/mapper/*.xml" />
+		</bean>
+
+</beans>

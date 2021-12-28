@@ -1,0 +1,15 @@
+pom.xml Maven Management File
+Project Setting - Maven dependency in buildPath
+
+maven dependncy에 pom.xml에 있는 dependency lib가 없으면
+인터넷 (maven repository)에서 자동으로 lib다운 받아서 maven dependency에 추가
+관련 lib 전부 한번에 자동으로 다운 받아준다.
+=> 결론 : lib직접 다운받지 말고 pom.xml에 dependency추가
+
+기본적으로 적용이 알아서 되지만, 적용이 안되는 경우는
+프로젝트 우클릭 - run as - maven clean - maven install - maven clean // maven 컴파일 다시 한번
+
+xml 오류 -> dependency가 지원해주지 않는 lib이름, 버전 등을 잘못 썼을 확률이 높다
+-> maven repository에서 복붙 하면 됨
+
+project rightClick - properties - projectFacets setting, 3.1, 1.8, javascript setting

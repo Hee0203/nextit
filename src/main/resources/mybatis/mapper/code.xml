@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.code.dao.ICommCodeDao">
+
+<select id="getCodeListByParent" resultType="com.study.code.vo.CodeVO" parameterType="String">
+	SELECT COMM_CD, COMM_NM, COMM_PARENT, COMM_ORD
+	FROM COMM_CODE WHERE COMM_PARENT = #{parentCode}
+</select>
+
+
+
+</mapper>

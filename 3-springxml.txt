@@ -1,0 +1,9 @@
+DispatcherServlet(mvc-servlet.xml)
+기본(annotation-driven, viewResolver) -> 건들지 않는 것을 권장
+정적자원 매핑 설정
+** @Controller 스캔해서 bean으로 가지고 있기 **
+------------------------------------------------------------------
+ContextLoaderListener(context-*.xml)
+@Service, @Mapper 스캔해서 bean으로 가지고 있기
+그 외 필요한 기능을 제공하는 객체를 bean으로 가지고 있기
+(Business, Persistence 영역의 객체를 bean으로 가지고 있기)

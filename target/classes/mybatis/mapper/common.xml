@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="common">
+<!-- 다른 xml에서 공통적으로 쓰이는 코드를 작성
+	따라서 namespace에 IDao이름 안씀
+	대신 다른 xml에서 사용할 때 쓰일 이름 -->
+
+<sql id="prePage">
+SELECT B.* FROM (												
+	SELECT A.*, ROWNUM AS RNUM FROM ( 								
+</sql>
+
+<sql id="postPage">
+	) A ) B						
+	WHERE RNUM BETWEEN #{firstRow} AND #{lastRow}		
+</sql>
+
+</mapper>
